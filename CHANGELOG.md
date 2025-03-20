@@ -1,5 +1,16 @@
 # Changelog
 
+## [0.18.0](https://github.com/aborgna-q/guppylang/compare/v0.17.0...v0.18.0) (2025-03-20)
+
+
+### ⚠ BREAKING CHANGES
+
+* Not really
+
+### Features
+
+* A very breaking example ([cfd70f8](https://github.com/aborgna-q/guppylang/commit/cfd70f8d49d62576794f123d45da88423c2c5deb))
+
 ## [0.17.0](https://github.com/CQCL/guppylang/compare/v0.16.0...v0.17.0) (2025-03-18)
 
 
