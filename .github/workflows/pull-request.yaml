@@ -40,7 +40,7 @@ jobs:
           enable-cache: true
 
       - name: Install Guppy
-        run: uv sync --frozen --python ${{ env.PYTHON_VERSION }} 
+        run: uv sync --locked --python ${{ env.PYTHON_VERSION }} 
 
       - name: Type check with mypy
         run: uv run mypy guppylang
@@ -87,7 +87,7 @@ jobs:
           enable-cache: true
 
       - name: Install Guppy with execution and pytket
-        run: uv sync --frozen --python ${{ env.PYTHON_VERSION }} --group execution --extra pytket
+        run: uv sync --locked --python ${{ env.PYTHON_VERSION }} --group execution --extra pytket
 
       - name: Cargo build validator
         run: cargo build -p validator --release
