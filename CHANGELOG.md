@@ -1,5 +1,266 @@
 # Changelog
 
+## [0.13.1](https://github.com/aborgna-q/guppylang/compare/v0.17.0...v0.13.1) (2025-03-20)
+
+
+### ⚠ BREAKING CHANGES
+
+* Not really
+* `load_pytket` takes arrays by default (pass `use_arrays=False` for qubit arguments)
+* `Option` is now a builtin type.
+* `angle.{__mul__, __rmul__, __truediv__, __rtruediv__` now take a `float` instead of an `int`.
+* `CompiledGlobals` renamed to `CompilerContext`
+* classical arrays can no longer be implicitly copied
+* `pytket` circuits no longer supported by `py` expressions (use `@pytket` or `load_pytket` instead)
+* Lists in `py(...)` expressions are now turned into Guppy arrays instead of lists.
+* `dirty_qubit` function removed
+* measure_return renamed to `project_z`
+* `prelude` module renamed to `std`
+* decorator `compile_module` and `GuppyModule.compile` return `ModulePointer` rather than `Package` (package can be retrieved using `ModulePointer.package`. `Definition.compile` returns a `Func{Defn/Decl}Pointer`.
+* pytket optional depenedencies removed
+* Removed the `linst` type, use `list` instead.
+* Unsupported list methods have been removed.
+* Pytket circuits loaded via a `py` expression no longer take ownership of the passed qubits.
+* Lists and function tensors are no longer available by default. `guppylang.enable_experimental_features()` must be called before compilation to enable them.
+* The `GuppyModule` argument is now optional for all decorators and no longer the first positional argument. Removed the explicit module objects `builtins`, `quantum`, and `angle`.
+* `quantum_functional` is now its own Guppy module and no longer implicitly comes with `quantum`.
+* Linear function arguments are now borrowed by default; removed the now redundant `@inout` annotation
+* `guppy.take_module` renamed to `guppy.get_module` and no longer removes the module from the state.
+* Quantum operations `rx`, `rz`, `phased_x`, and `zz_max` use the `angle` type instead of floats.
+* Bumped the `hugr` dependency to `0.8.0`
+* `GuppyModule.load` no longer loads the content of modules but instead just brings the name of the module into scope. Use `GuppyModule.load_all` to get the old behaviour.
+* Removed `guppylang.hugr_builder.hugr.Hugr`, compiling a module returns a `hugr.Package` instead.
+* 
+* `qubit`s are now reset on allocation
+* Make `qubit` type lower case ([#165](https://github.com/aborgna-q/guppylang/issues/165))
+* Add remaining tket2 ops ([#107](https://github.com/aborgna-q/guppylang/issues/107))
+* rename package to guppylang ([#108](https://github.com/aborgna-q/guppylang/issues/108))
+* conform to hugr schema ([#93](https://github.com/aborgna-q/guppylang/issues/93))
+
+### Features
+
+* `qubit`s are now reset on allocation, and `dirty_qubit` added ([#325](https://github.com/aborgna-q/guppylang/issues/325)) ([4a9e205](https://github.com/aborgna-q/guppylang/commit/4a9e20529a4d0859f010fad62ba06f62ca1c98ce))
+* A very breaking example ([cfd70f8](https://github.com/aborgna-q/guppylang/commit/cfd70f8d49d62576794f123d45da88423c2c5deb))
+* Add `__version__` field to guppylang ([#473](https://github.com/aborgna-q/guppylang/issues/473)) ([b996c62](https://github.com/aborgna-q/guppylang/commit/b996c62a5f1f5d643fb9a2be893911f6021dd0e9))
+* add `get_current_shot()` to qsystem module ([#806](https://github.com/aborgna-q/guppylang/issues/806)) ([3632ec6](https://github.com/aborgna-q/guppylang/commit/3632ec606f44ee57d5ce484ca019cc683570156f))
+* add `maybe_qubit` stdlib function ([#705](https://github.com/aborgna-q/guppylang/issues/705)) ([a49f70e](https://github.com/aborgna-q/guppylang/commit/a49f70e15048efc5a30ef34625086b341b278db6)), closes [#627](https://github.com/aborgna-q/guppylang/issues/627)
+* add `Option.take()` for swapping with None ([#809](https://github.com/aborgna-q/guppylang/issues/809)) ([9a459d5](https://github.com/aborgna-q/guppylang/commit/9a459d57e19a7194b30468fa15719f9b9ed4a135))
+* add `Option.unwrap_nothing()` method ([#829](https://github.com/aborgna-q/guppylang/issues/829)) ([abb1aa1](https://github.com/aborgna-q/guppylang/commit/abb1aa1707e94cbbce82a74b3d0c388c252483ef)), closes [#810](https://github.com/aborgna-q/guppylang/issues/810)
+* add `panic` builtin function ([#757](https://github.com/aborgna-q/guppylang/issues/757)) ([4ae3032](https://github.com/aborgna-q/guppylang/commit/4ae3032088771166de867c5d8f2f19924d9e0cd3))
+* add `qubit` discard/measure methods ([#580](https://github.com/aborgna-q/guppylang/issues/580)) ([242fa44](https://github.com/aborgna-q/guppylang/commit/242fa44f45e676e81efd5df48de9fc80fe0ea516))
+* Add `SizedIter` wrapper type ([#611](https://github.com/aborgna-q/guppylang/issues/611)) ([2e9da6b](https://github.com/aborgna-q/guppylang/commit/2e9da6be24de499f059c3cdb7553604cb9373ca0))
+* Add a unified definition system ([#179](https://github.com/aborgna-q/guppylang/issues/179)) ([ae71932](https://github.com/aborgna-q/guppylang/commit/ae71932a608ed5034c060972eb70265ae2dec88c))
+* Add angle type ([#449](https://github.com/aborgna-q/guppylang/issues/449)) ([12e41e0](https://github.com/aborgna-q/guppylang/commit/12e41e02354a504b8a527a48b6df8f2ed51891df))
+* Add array copy method ([#784](https://github.com/aborgna-q/guppylang/issues/784)) ([15bae6e](https://github.com/aborgna-q/guppylang/commit/15bae6eee6f334485f0a71cf3d58a135f5e533bc))
+* Add array literals ([#446](https://github.com/aborgna-q/guppylang/issues/446)) ([a255c02](https://github.com/aborgna-q/guppylang/commit/a255c02f7e1c525b7534f5b08a5c3d6f1fb79392))
+* Add array type ([#258](https://github.com/aborgna-q/guppylang/issues/258)) ([041c621](https://github.com/aborgna-q/guppylang/commit/041c621a0481f14ee517b0356e0ebb9cae6ddc2e))
+* add barrier operation to builtins ([#849](https://github.com/aborgna-q/guppylang/issues/849)) ([cf0bcfb](https://github.com/aborgna-q/guppylang/commit/cf0bcfb761cf0a4ff0bab931c49c6d06fb9f4778))
+* add boolean xor support ([#747](https://github.com/aborgna-q/guppylang/issues/747)) ([7fa4c8d](https://github.com/aborgna-q/guppylang/commit/7fa4c8d6cf94bf19faa618d4d48d023da1484514)), closes [#750](https://github.com/aborgna-q/guppylang/issues/750)
+* Add CH gate to the stdlib ([#793](https://github.com/aborgna-q/guppylang/issues/793)) ([1199a14](https://github.com/aborgna-q/guppylang/commit/1199a14a80210dbd9dd61f72c35ca7b846a0ec2e)), closes [#792](https://github.com/aborgna-q/guppylang/issues/792)
+* Add compile-time Python expressions ([#74](https://github.com/aborgna-q/guppylang/issues/74)) ([7100132](https://github.com/aborgna-q/guppylang/commit/7100132fc15757c67e9c8f5f5c7f233c2fa31e8e))
+* Add Definition.compile producing Hugr Package ([#504](https://github.com/aborgna-q/guppylang/issues/504)) ([d8c8bec](https://github.com/aborgna-q/guppylang/commit/d8c8bec33075e015dc12d8142891f566c3249c92))
+* Add equality test for booleans ([#394](https://github.com/aborgna-q/guppylang/issues/394)) ([dd702ce](https://github.com/aborgna-q/guppylang/commit/dd702ce5e5e5f363b3a31e0075690703f2fe6d29)), closes [#363](https://github.com/aborgna-q/guppylang/issues/363)
+* Add extern symbols ([#236](https://github.com/aborgna-q/guppylang/issues/236)) ([977ccd8](https://github.com/aborgna-q/guppylang/commit/977ccd831a3df1bdf49582309bce065a865d3e31))
+* Add functions to quantum module and make quantum_functional independent ([#494](https://github.com/aborgna-q/guppylang/issues/494)) ([0b0b1af](https://github.com/aborgna-q/guppylang/commit/0b0b1afbf5bf481d8fdcbe5050dcf9d5fb85d263))
+* Add hugr-to-json encoding, and validate it ([06b3b16](https://github.com/aborgna-q/guppylang/commit/06b3b16c4ae89eaf9d049a8e8f83d3aba21a4fca))
+* Add hugr-to-json encoding, and validate it ([#83](https://github.com/aborgna-q/guppylang/issues/83)) ([b441a3e](https://github.com/aborgna-q/guppylang/commit/b441a3e8b4f0271e813f72fa468b6102acbfc21f))
+* Add implicit importing of modules ([#461](https://github.com/aborgna-q/guppylang/issues/461)) ([1b73032](https://github.com/aborgna-q/guppylang/commit/1b730320d6f6b7d6a1062f5322ccec0cd888380f))
+* Add iterators and lists ([#67](https://github.com/aborgna-q/guppylang/issues/67)) ([69fac9c](https://github.com/aborgna-q/guppylang/commit/69fac9c4111017206e51a6db93318e1662fc62ce))
+* add measure_array and discard_array quantum function ([#710](https://github.com/aborgna-q/guppylang/issues/710)) ([3ad49ff](https://github.com/aborgna-q/guppylang/commit/3ad49ff43ceb8f08001bba3edd9e43d32912747a))
+* Add method to load pytket circuit without function stub ([#712](https://github.com/aborgna-q/guppylang/issues/712)) ([ee1e3de](https://github.com/aborgna-q/guppylang/commit/ee1e3defb941e9da29f462afc4c16f3e97147828))
+* Add missing tket2 quantum gates, generalise RotationCompile ([#510](https://github.com/aborgna-q/guppylang/issues/510)) ([18d4b4c](https://github.com/aborgna-q/guppylang/commit/18d4b4c8b324b0f202e262768617d450745004dc))
+* Add module load method to guppy ([#126](https://github.com/aborgna-q/guppylang/issues/126)) ([5204850](https://github.com/aborgna-q/guppylang/commit/52048508231ca942acc9e4559375d9c5ee60a5fb))
+* Add nat type ([#254](https://github.com/aborgna-q/guppylang/issues/254)) ([a461a9d](https://github.com/aborgna-q/guppylang/commit/a461a9d5556d7ed68da5a722100c8b3fb449b25e))
+* Add Option type to standard library ([#696](https://github.com/aborgna-q/guppylang/issues/696)) ([45ea6b7](https://github.com/aborgna-q/guppylang/commit/45ea6b7086f75f017eb4830f55dca9c87d9f599b))
+* Add pi constant ([#451](https://github.com/aborgna-q/guppylang/issues/451)) ([9d35a78](https://github.com/aborgna-q/guppylang/commit/9d35a78b784ba0c00bcdf3d2a1256606fb797644))
+* Add polymorphism ([#61](https://github.com/aborgna-q/guppylang/issues/61)) ([d0cf104](https://github.com/aborgna-q/guppylang/commit/d0cf10434a3d33a8cc96050c1e611c646bd81cc9))
+* Add qualified imports and make them the default ([#443](https://github.com/aborgna-q/guppylang/issues/443)) ([553ec51](https://github.com/aborgna-q/guppylang/commit/553ec51d071ed6f195322685590335fa1712c4a7))
+* Add remaining tket2 ops ([#107](https://github.com/aborgna-q/guppylang/issues/107)) ([e0761ff](https://github.com/aborgna-q/guppylang/commit/e0761ffd876d44d13aefeaac17fe6058932cbf80))
+* Add result function ([#271](https://github.com/aborgna-q/guppylang/issues/271)) ([792fb87](https://github.com/aborgna-q/guppylang/commit/792fb871cac5b19905e87dd485e11d7488f2fb87)), closes [#270](https://github.com/aborgna-q/guppylang/issues/270)
+* Add string type ([#733](https://github.com/aborgna-q/guppylang/issues/733)) ([aa9341b](https://github.com/aborgna-q/guppylang/commit/aa9341b13c9277756296dd98a86989e23c40e3a8))
+* Add struct types ([#207](https://github.com/aborgna-q/guppylang/issues/207)) ([f7adb85](https://github.com/aborgna-q/guppylang/commit/f7adb85bfbc7498047471cdf6b232c6b5056e19e))
+* add top-level imports ([#125](https://github.com/aborgna-q/guppylang/issues/125)) ([e3da1ec](https://github.com/aborgna-q/guppylang/commit/e3da1eca85e67890e4bd96154fdcde8b129b0243)), closes [#127](https://github.com/aborgna-q/guppylang/issues/127)
+* Allow access to struct fields and mutation of linear ones ([#295](https://github.com/aborgna-q/guppylang/issues/295)) ([6698b75](https://github.com/aborgna-q/guppylang/commit/6698b75b01421cd1fa545219786266fb0c1da05b)), closes [#293](https://github.com/aborgna-q/guppylang/issues/293)
+* Allow array arguments to `load_pytket` ([#858](https://github.com/aborgna-q/guppylang/issues/858)) ([37b8b80](https://github.com/aborgna-q/guppylang/commit/37b8b80db373b87809a0303af24b7dade7161396))
+* Allow calling a tensor of functions ([#196](https://github.com/aborgna-q/guppylang/issues/196)) ([af4fb07](https://github.com/aborgna-q/guppylang/commit/af4fb07e4613c8ab5948a681ba336f1f49a49495))
+* Allow calling of methods ([#440](https://github.com/aborgna-q/guppylang/issues/440)) ([5a59da3](https://github.com/aborgna-q/guppylang/commit/5a59da359ee7a098ce069db5cdebd5eb98ec9781))
+* Allow constant nats as type args ([#255](https://github.com/aborgna-q/guppylang/issues/255)) ([d706735](https://github.com/aborgna-q/guppylang/commit/d7067356c71cbcc5352e69ea4eed6bdc1d0c1ec8))
+* Allow explicit application of type arguments ([#821](https://github.com/aborgna-q/guppylang/issues/821)) ([8f90c04](https://github.com/aborgna-q/guppylang/commit/8f90c046ac41597b4b0bfdf118648553f1bd7dae)), closes [#770](https://github.com/aborgna-q/guppylang/issues/770)
+* Allow generic nat args in statically sized ranges ([#706](https://github.com/aborgna-q/guppylang/issues/706)) ([f441bb8](https://github.com/aborgna-q/guppylang/commit/f441bb8e56e1006acd1fa37c6f3edada5a8fc537)), closes [#663](https://github.com/aborgna-q/guppylang/issues/663)
+* Allow imports of function definitions and aliased imports ([#432](https://github.com/aborgna-q/guppylang/issues/432)) ([e23b666](https://github.com/aborgna-q/guppylang/commit/e23b6668ef0716f7dabb91be73a217c11ca32ecc))
+* Allow linear data inside lists ([#531](https://github.com/aborgna-q/guppylang/issues/531)) ([229be2e](https://github.com/aborgna-q/guppylang/commit/229be2e6c0e048d431683707a2532503e2f3dad1))
+* Allow lists in py expressions ([#113](https://github.com/aborgna-q/guppylang/issues/113)) ([caaf562](https://github.com/aborgna-q/guppylang/commit/caaf5627ed19b171cda339b3e79954ce603effbf))
+* Allow py expressions in type arguments ([#515](https://github.com/aborgna-q/guppylang/issues/515)) ([b4fae3f](https://github.com/aborgna-q/guppylang/commit/b4fae3f7a29b384f8bbe0069dc6131ec115e17ee))
+* Allow pytket circuits in py expressions ([#115](https://github.com/aborgna-q/guppylang/issues/115)) ([67d1a7e](https://github.com/aborgna-q/guppylang/commit/67d1a7e79c5ff439595f1a0e13fd7f8e3d6fbc6f))
+* Allow redefinition of names in guppy modules ([#326](https://github.com/aborgna-q/guppylang/issues/326)) ([314409c](https://github.com/aborgna-q/guppylang/commit/314409cd63b544d0fdbf16db66201b08dead81fe)), closes [#307](https://github.com/aborgna-q/guppylang/issues/307)
+* Array comprehension ([#613](https://github.com/aborgna-q/guppylang/issues/613)) ([fdc0526](https://github.com/aborgna-q/guppylang/commit/fdc052656c6b62a95d42e0757ea50bd1d0226571)), closes [#614](https://github.com/aborgna-q/guppylang/issues/614) [#616](https://github.com/aborgna-q/guppylang/issues/616) [#612](https://github.com/aborgna-q/guppylang/issues/612)
+* Array indexing ([#415](https://github.com/aborgna-q/guppylang/issues/415)) ([2199b48](https://github.com/aborgna-q/guppylang/commit/2199b48d777c28cf5584f537d78360d15d4c924b)), closes [#421](https://github.com/aborgna-q/guppylang/issues/421) [#422](https://github.com/aborgna-q/guppylang/issues/422) [#447](https://github.com/aborgna-q/guppylang/issues/447)
+* Array subscript assignment for classical arrays ([#776](https://github.com/aborgna-q/guppylang/issues/776)) ([6880e11](https://github.com/aborgna-q/guppylang/commit/6880e111ebba409f37c16b7b6b77fd08a68bdda8))
+* conventional results post processing ([#593](https://github.com/aborgna-q/guppylang/issues/593)) ([db96224](https://github.com/aborgna-q/guppylang/commit/db962243670fea4987ef842c67a59f560f08f72a))
+* Emit infallible `float`→`rotation` conversions ([#560](https://github.com/aborgna-q/guppylang/issues/560)) ([74944a7](https://github.com/aborgna-q/guppylang/commit/74944a7cbb60ce514b8e3f8fab15ca3f5573a34a))
+* Export py function ([6dca95d](https://github.com/aborgna-q/guppylang/commit/6dca95deda3cc5bd103df104e33991c9adce2be2))
+* Generalise scalar angle operations to float ([#824](https://github.com/aborgna-q/guppylang/issues/824)) ([d3f5c7f](https://github.com/aborgna-q/guppylang/commit/d3f5c7fa8514537c69293b9b422400f71f9e73b7))
+* Generate constructor methods for structs ([#262](https://github.com/aborgna-q/guppylang/issues/262)) ([f68d0af](https://github.com/aborgna-q/guppylang/commit/f68d0afe74c75e40b49babe26091a24d822218f7)), closes [#261](https://github.com/aborgna-q/guppylang/issues/261)
+* Generic function definitions ([#618](https://github.com/aborgna-q/guppylang/issues/618)) ([7519b90](https://github.com/aborgna-q/guppylang/commit/7519b9096a02cf75672313bd0bc90c613e5230ee)), closes [#522](https://github.com/aborgna-q/guppylang/issues/522)
+* Hide lists and function tensors behind experimental flag ([#501](https://github.com/aborgna-q/guppylang/issues/501)) ([c867f48](https://github.com/aborgna-q/guppylang/commit/c867f48d6dc555454db69943f0b420cb53676d3d))
+* Implement `float` to `int` and `nat` casts ([#831](https://github.com/aborgna-q/guppylang/issues/831)) ([b56d66c](https://github.com/aborgna-q/guppylang/commit/b56d66c25ec6889619def8cf4f417fc3bdf19054)), closes [#794](https://github.com/aborgna-q/guppylang/issues/794)
+* Implicit coercion of numeric types ([#702](https://github.com/aborgna-q/guppylang/issues/702)) ([df4745b](https://github.com/aborgna-q/guppylang/commit/df4745bd9343be777ddb78373db5217f63744e61)), closes [#701](https://github.com/aborgna-q/guppylang/issues/701)
+* Improve compiler diagnostics ([#547](https://github.com/aborgna-q/guppylang/issues/547)) ([90d465d](https://github.com/aborgna-q/guppylang/commit/90d465d87bdde777302381367598812e37c501e7)), closes [#551](https://github.com/aborgna-q/guppylang/issues/551) [#553](https://github.com/aborgna-q/guppylang/issues/553) [#586](https://github.com/aborgna-q/guppylang/issues/586) [#588](https://github.com/aborgna-q/guppylang/issues/588) [#587](https://github.com/aborgna-q/guppylang/issues/587) [#590](https://github.com/aborgna-q/guppylang/issues/590) [#600](https://github.com/aborgna-q/guppylang/issues/600) [#601](https://github.com/aborgna-q/guppylang/issues/601) [#606](https://github.com/aborgna-q/guppylang/issues/606)
+* Inout arguments ([#311](https://github.com/aborgna-q/guppylang/issues/311)) ([060649b](https://github.com/aborgna-q/guppylang/commit/060649b8e1249489dd5851e0a8578ab715e093ce)), closes [#315](https://github.com/aborgna-q/guppylang/issues/315) [#316](https://github.com/aborgna-q/guppylang/issues/316) [#349](https://github.com/aborgna-q/guppylang/issues/349) [#344](https://github.com/aborgna-q/guppylang/issues/344) [#321](https://github.com/aborgna-q/guppylang/issues/321) [#331](https://github.com/aborgna-q/guppylang/issues/331) [#350](https://github.com/aborgna-q/guppylang/issues/350) [#340](https://github.com/aborgna-q/guppylang/issues/340) [#351](https://github.com/aborgna-q/guppylang/issues/351)
+* Load `pytket` circuit as a function definition ([#672](https://github.com/aborgna-q/guppylang/issues/672)) ([b21b7e1](https://github.com/aborgna-q/guppylang/commit/b21b7e132a22363b9c2d69485a3f1f4d127b8129))
+* Local implicit modules for [@guppy](https://github.com/guppy) ([#105](https://github.com/aborgna-q/guppylang/issues/105)) ([f52a5de](https://github.com/aborgna-q/guppylang/commit/f52a5de95972d028167f5800d16573c178c9e2be))
+* Make `True` and `False` branches unconditional ([#740](https://github.com/aborgna-q/guppylang/issues/740)) ([748ea95](https://github.com/aborgna-q/guppylang/commit/748ea95cc6df449e29454a9b0a6ab1d56f370e1b))
+* Make arrays iterable ([#632](https://github.com/aborgna-q/guppylang/issues/632)) ([07b9871](https://github.com/aborgna-q/guppylang/commit/07b987129409bf22d09b80661163f206ffc68f48))
+* Make linear types [@inout](https://github.com/inout) by default; add [@owned](https://github.com/owned) annotation ([#486](https://github.com/aborgna-q/guppylang/issues/486)) ([e900c96](https://github.com/aborgna-q/guppylang/commit/e900c96eb3755ad5d4304eb721e791b8185c8f09))
+* mem_swap function for swapping two inout values ([#653](https://github.com/aborgna-q/guppylang/issues/653)) ([89e10a5](https://github.com/aborgna-q/guppylang/commit/89e10a5e5c4344badcd0a0a16983c8a3a560ad09))
+* New type representation with parameters ([#174](https://github.com/aborgna-q/guppylang/issues/174)) ([73e29f2](https://github.com/aborgna-q/guppylang/commit/73e29f25ec90b8dfcc6517b961d6d1d13f694cb6))
+* Only lower definitions to Hugr if they are used ([#496](https://github.com/aborgna-q/guppylang/issues/496)) ([cc2c8a4](https://github.com/aborgna-q/guppylang/commit/cc2c8a4f09f43f8913c49ff0dfe0da601a85b7c6))
+* Parse docstrings for functions ([#334](https://github.com/aborgna-q/guppylang/issues/334)) ([a7cc97a](https://github.com/aborgna-q/guppylang/commit/a7cc97a6c1af674972c3a37e28ef7e33ddf6fa3d))
+* qsystem std functions with updated primitives ([#679](https://github.com/aborgna-q/guppylang/issues/679)) ([b0f041f](https://github.com/aborgna-q/guppylang/commit/b0f041f262c4757b5f519d3a28f0c2b2d038f623))
+* **qsystem:** add Random number generation module ([08fbf47](https://github.com/aborgna-q/guppylang/commit/08fbf47230e7484795c7ed284d586170c3b6fa79))
+* range() with single-argument ([#452](https://github.com/aborgna-q/guppylang/issues/452)) ([d05f369](https://github.com/aborgna-q/guppylang/commit/d05f369041edbb10772117161d3a74414769361d))
+* Refactor to support affine arrays ([#768](https://github.com/aborgna-q/guppylang/issues/768)) ([92ec6d1](https://github.com/aborgna-q/guppylang/commit/92ec6d19765fb66f548f818778ec02772abd33f3))
+* Remove circuits from `py` expressions ([#746](https://github.com/aborgna-q/guppylang/issues/746)) ([ee8926b](https://github.com/aborgna-q/guppylang/commit/ee8926bb5f3a6b43aea105f702c0e4ff3202b79b))
+* remove dirty_qubit ([#698](https://github.com/aborgna-q/guppylang/issues/698)) ([78e366b](https://github.com/aborgna-q/guppylang/commit/78e366b1032afefcdedc6f4b78b30999f0e67d2d))
+* remove python python 3 upper bound (support python 3.13) ([#578](https://github.com/aborgna-q/guppylang/issues/578)) ([73bb94a](https://github.com/aborgna-q/guppylang/commit/73bb94a76731afff7edfce681b556122fef486c7)), closes [#558](https://github.com/aborgna-q/guppylang/issues/558)
+* restrict result tag sizes to 256 bytes ([#596](https://github.com/aborgna-q/guppylang/issues/596)) ([4e8e00f](https://github.com/aborgna-q/guppylang/commit/4e8e00ffe733b1b65055f2355d6a538334449e6d)), closes [#595](https://github.com/aborgna-q/guppylang/issues/595)
+* Return already-compiled hugrs from `GuppyModule.compile` ([#247](https://github.com/aborgna-q/guppylang/issues/247)) ([9d01eae](https://github.com/aborgna-q/guppylang/commit/9d01eae8e4db21a95ad3e97d4e78fea7b4b32c08))
+* return packages with pointers when compiling ([#568](https://github.com/aborgna-q/guppylang/issues/568)) ([7a9d5da](https://github.com/aborgna-q/guppylang/commit/7a9d5da396fee52ff979fdd03eb0de4515d474a7))
+* Skip checking of redefined functions ([#457](https://github.com/aborgna-q/guppylang/issues/457)) ([7f9ad32](https://github.com/aborgna-q/guppylang/commit/7f9ad32906e909c552025063c062d8b79d43325a))
+* Support `nat`/`int` ↔ `bool` cast operations ([#459](https://github.com/aborgna-q/guppylang/issues/459)) ([3b778c3](https://github.com/aborgna-q/guppylang/commit/3b778c3649b8c54b29faa907e3fd95e9ae87e5bd))
+* Support implicit modules for all decorators and turn builtins into implicit module ([#476](https://github.com/aborgna-q/guppylang/issues/476)) ([cc8a424](https://github.com/aborgna-q/guppylang/commit/cc8a424ad9a8b8c3c5a3b5cc700ccdb7a5ff8fa9))
+* support integer exponentiation in guppy source ([#753](https://github.com/aborgna-q/guppylang/issues/753)) ([70c8fcf](https://github.com/aborgna-q/guppylang/commit/70c8fcf1cbe009f5938cffc5df2a274cb85eee99))
+* Switch to improved iterator protocol ([#833](https://github.com/aborgna-q/guppylang/issues/833)) ([348dfdc](https://github.com/aborgna-q/guppylang/commit/348dfdc38ffd3aed6d0423b7fa0d28e340d95cfd))
+* Turn int and float into core types ([#225](https://github.com/aborgna-q/guppylang/issues/225)) ([99217dc](https://github.com/aborgna-q/guppylang/commit/99217dcddb16fa7c713b7e5c5d356715a0fc9496))
+* Turn py expression lists into arrays ([#697](https://github.com/aborgna-q/guppylang/issues/697)) ([d52a00a](https://github.com/aborgna-q/guppylang/commit/d52a00ae6f9c33d9fe65ddd46bcf94e39f53172f))
+* Unpacking assignment of iterable types with static size ([#688](https://github.com/aborgna-q/guppylang/issues/688)) ([602e243](https://github.com/aborgna-q/guppylang/commit/602e2434acb07ca5906d867affe9d4fd1a06d59d))
+* Update Hugr lowering for lists ([#534](https://github.com/aborgna-q/guppylang/issues/534)) ([7083760](https://github.com/aborgna-q/guppylang/commit/7083760a9807375a2e6453826e5a453a0415aff7))
+* update to `hugr-py 0.3` ([3da3936](https://github.com/aborgna-q/guppylang/commit/3da393674de7d03dd0d5d5b8239dd8968d16c4c4))
+* update to hugr 0.10 and tket2 0.6 ([#725](https://github.com/aborgna-q/guppylang/issues/725)) ([63ea7a7](https://github.com/aborgna-q/guppylang/commit/63ea7a726edc2512e63b89076db5b4c82bec58af))
+* update to hugr-python 0.4  ([af770c3](https://github.com/aborgna-q/guppylang/commit/af770c31536a59c32fd8229579455a309e90058e))
+* Upgrade Hugr and start using the shared Pydantic model ([#201](https://github.com/aborgna-q/guppylang/issues/201)) ([bd7e67a](https://github.com/aborgna-q/guppylang/commit/bd7e67a59df3c6a8eede15c8a62f4f555d539c9a))
+* Use `hugr-cli` for validation ([#455](https://github.com/aborgna-q/guppylang/issues/455)) ([1d0667b](https://github.com/aborgna-q/guppylang/commit/1d0667bc06998a6682352b46758f5465ef4ae22c))
+* Use angle type in quantum operations ([#467](https://github.com/aborgna-q/guppylang/issues/467)) ([ce0f746](https://github.com/aborgna-q/guppylang/commit/ce0f746dfe6702c68a850380ef8965e58f666354))
+* Use cell name instead of file for notebook errors ([#382](https://github.com/aborgna-q/guppylang/issues/382)) ([d542601](https://github.com/aborgna-q/guppylang/commit/d5426017320efba8ed8cf2024c37a0b64b0cdce9))
+* Use inout for pytket circuits ([#500](https://github.com/aborgna-q/guppylang/issues/500)) ([a980ec2](https://github.com/aborgna-q/guppylang/commit/a980ec2c89e2ebecb16b0ea12750ecf6781f3ee3))
+* Use the hugr builder ([536abf9](https://github.com/aborgna-q/guppylang/commit/536abf9ff82899332c960695da9e620bbdbf3d8b))
+* Utility methods to check if a module contains a fn/type ([f10de74](https://github.com/aborgna-q/guppylang/commit/f10de74689b3547c2a58a40558081c42bc0d0c3a))
+* Utility methods to check if a module contains a fn/type ([a70470d](https://github.com/aborgna-q/guppylang/commit/a70470dae8b5bae1c44cba713e4f2925ee7bfedd))
+* Utility methods to check if a module contains a fn/type ([#92](https://github.com/aborgna-q/guppylang/issues/92)) ([f10de74](https://github.com/aborgna-q/guppylang/commit/f10de74689b3547c2a58a40558081c42bc0d0c3a))
+
+
+### Bug Fixes
+
+* `angle` is now a struct and emitted as a rotation  ([#485](https://github.com/aborgna-q/guppylang/issues/485)) ([992b138](https://github.com/aborgna-q/guppylang/commit/992b138a312dace5a6f846e99013a0a0bcfe74e6))
+* Accept non-negative int literals and py expressions as nats ([#708](https://github.com/aborgna-q/guppylang/issues/708)) ([a93d4fe](https://github.com/aborgna-q/guppylang/commit/a93d4fe0b07e99bd0537f51a21f9cbf3c0502360)), closes [#704](https://github.com/aborgna-q/guppylang/issues/704)
+* add "tket2" extension suffix for quantum ops ([261b4b8](https://github.com/aborgna-q/guppylang/commit/261b4b8fab1b055c67cec95a047005b8ff8b8f25))
+* Add missing test file ([#266](https://github.com/aborgna-q/guppylang/issues/266)) ([75231fe](https://github.com/aborgna-q/guppylang/commit/75231fe509c52945d44eadb2aa238d1eecf01b0c))
+* Allow borrowing inside comprehensions ([#723](https://github.com/aborgna-q/guppylang/issues/723)) ([02b6ab0](https://github.com/aborgna-q/guppylang/commit/02b6ab00f96a7801199d0ec2d3c017d7d81cdf59)), closes [#719](https://github.com/aborgna-q/guppylang/issues/719)
+* Allow string py expressions in result and panic ([#759](https://github.com/aborgna-q/guppylang/issues/759)) ([53401cc](https://github.com/aborgna-q/guppylang/commit/53401cc9bcc51844a59258e505ece941687ca32f))
+* Consider type when deciding whether to pack up returns ([#212](https://github.com/aborgna-q/guppylang/issues/212)) ([4f24a07](https://github.com/aborgna-q/guppylang/commit/4f24a071d3c0b475920141fc5847474f0621b703))
+* correct order of basic block successors ([#110](https://github.com/aborgna-q/guppylang/issues/110)) ([a42db7d](https://github.com/aborgna-q/guppylang/commit/a42db7dcda1e0b31e0f02b60f5800e695475cc99))
+* Correctly handle assignments of arrays in control-flow ([#845](https://github.com/aborgna-q/guppylang/issues/845)) ([32ded02](https://github.com/aborgna-q/guppylang/commit/32ded02c216b3fcad1c0da964f4d15e78c887e62)), closes [#844](https://github.com/aborgna-q/guppylang/issues/844)
+* Correctly store names of function definitions/declarations ([#47](https://github.com/aborgna-q/guppylang/issues/47)) ([a7537bb](https://github.com/aborgna-q/guppylang/commit/a7537bbd309a19766e517caa07b3bc3c8a74a813))
+* default input extensions should be None ([#99](https://github.com/aborgna-q/guppylang/issues/99)) ([7fac597](https://github.com/aborgna-q/guppylang/commit/7fac597cec6b51c5cdbf09037952076d9803b4c1))
+* Define `len` of arrays using Guppy ([#863](https://github.com/aborgna-q/guppylang/issues/863)) ([6868ff6](https://github.com/aborgna-q/guppylang/commit/6868ff6b9cc7c7783356bc80aeb5715063b2060a)), closes [#804](https://github.com/aborgna-q/guppylang/issues/804)
+* Detect unsupported default arguments ([#659](https://github.com/aborgna-q/guppylang/issues/659)) ([94ac7e3](https://github.com/aborgna-q/guppylang/commit/94ac7e38c773e4aac8b809ae27cf7e18342a87cb)), closes [#658](https://github.com/aborgna-q/guppylang/issues/658)
+* docs build command ([#729](https://github.com/aborgna-q/guppylang/issues/729)) ([471b74c](https://github.com/aborgna-q/guppylang/commit/471b74c2bf5ca6144d6a5dec71b8a0e4aec57a95))
+* Don't reorder inputs of entry BB ([#243](https://github.com/aborgna-q/guppylang/issues/243)) ([ad56b99](https://github.com/aborgna-q/guppylang/commit/ad56b991c03e1bc52690e41450521e7fe9100268))
+* Enable len for linear arrays ([#576](https://github.com/aborgna-q/guppylang/issues/576)) ([117b68e](https://github.com/aborgna-q/guppylang/commit/117b68e6b74221ec85822f721c23c8245e2294fe)), closes [#570](https://github.com/aborgna-q/guppylang/issues/570)
+* Ensure `int`s can be treated as booleans ([#709](https://github.com/aborgna-q/guppylang/issues/709)) ([6ef6d60](https://github.com/aborgna-q/guppylang/commit/6ef6d608dc8c92c7045575fe579637ca482f3516)), closes [#681](https://github.com/aborgna-q/guppylang/issues/681)
+* Evade false positives for inout variable usage ([#493](https://github.com/aborgna-q/guppylang/issues/493)) ([6fdb5d6](https://github.com/aborgna-q/guppylang/commit/6fdb5d6ff1fb4c2e4db89f885480fbe818fd32a0))
+* Fix and update demo notebook ([#376](https://github.com/aborgna-q/guppylang/issues/376)) ([23b2a15](https://github.com/aborgna-q/guppylang/commit/23b2a1559271ce36a348384616603bef67c73992))
+* Fix array comprehensions with generic element type ([#865](https://github.com/aborgna-q/guppylang/issues/865)) ([50df0db](https://github.com/aborgna-q/guppylang/commit/50df0db09883326cf077c8fbffbea42a7f6231a8)), closes [#864](https://github.com/aborgna-q/guppylang/issues/864)
+* Fix array execution bugs ([#731](https://github.com/aborgna-q/guppylang/issues/731)) ([0f6ceaa](https://github.com/aborgna-q/guppylang/commit/0f6ceaa58648f105e601298081170eaec5a0e026))
+* Fix array lowering bugs ([#575](https://github.com/aborgna-q/guppylang/issues/575)) ([83b9f31](https://github.com/aborgna-q/guppylang/commit/83b9f312e3465d83318feaf0f5a8af6a5ed9fa45))
+* Fix compiler diagnostics when calling `check` instead of `compile` ([#854](https://github.com/aborgna-q/guppylang/issues/854)) ([9993338](https://github.com/aborgna-q/guppylang/commit/9993338f8f14474c91f8dcb3cf9479f6652db00b))
+* Fix diagnostic spans for indented code ([#856](https://github.com/aborgna-q/guppylang/issues/856)) ([d9fc9fd](https://github.com/aborgna-q/guppylang/commit/d9fc9fd01125be2da20d2c622f402b2f41a5dfb5)), closes [#852](https://github.com/aborgna-q/guppylang/issues/852)
+* Fix error message for conditional shadowing of global variables ([#815](https://github.com/aborgna-q/guppylang/issues/815)) ([bdaae11](https://github.com/aborgna-q/guppylang/commit/bdaae11c3035d7691a1e2ed2e731f2d8764be49d)), closes [#772](https://github.com/aborgna-q/guppylang/issues/772)
+* Fix error printing for structs defined in notebooks ([#777](https://github.com/aborgna-q/guppylang/issues/777)) ([b41e0fc](https://github.com/aborgna-q/guppylang/commit/b41e0fcb4aa37d587800059361605bfae3e783c5))
+* Fix generic array functions ([#630](https://github.com/aborgna-q/guppylang/issues/630)) ([f4e5655](https://github.com/aborgna-q/guppylang/commit/f4e5655e0a85d773ec21fc4a9f7a6c23263dae0a))
+* Fix implicit modules in IPython shells ([#662](https://github.com/aborgna-q/guppylang/issues/662)) ([4ecb5f2](https://github.com/aborgna-q/guppylang/commit/4ecb5f2fb2dd5b4b9baa5546869c46d42c709017)), closes [#661](https://github.com/aborgna-q/guppylang/issues/661)
+* Fix invalid result operation name ([#367](https://github.com/aborgna-q/guppylang/issues/367)) ([568624d](https://github.com/aborgna-q/guppylang/commit/568624d1ccd70dc78c16f4ca2170dc167791ea64))
+* Fix linearity checking bug ([#441](https://github.com/aborgna-q/guppylang/issues/441)) ([0b8ea21](https://github.com/aborgna-q/guppylang/commit/0b8ea21763fd3611a2b5ec2a978b14954d5a9582))
+* Fix linearity checking for array copies ([#841](https://github.com/aborgna-q/guppylang/issues/841)) ([d9b085f](https://github.com/aborgna-q/guppylang/commit/d9b085f5dd08e9bc3514b18ede5ecfdb065c760e)), closes [#838](https://github.com/aborgna-q/guppylang/issues/838)
+* Fix list lowering bugs ([#572](https://github.com/aborgna-q/guppylang/issues/572)) ([2d454f3](https://github.com/aborgna-q/guppylang/commit/2d454f30495b7ceebd1c81719fb962ec0931da07))
+* Fix lowering of list.__len__ ([#577](https://github.com/aborgna-q/guppylang/issues/577)) ([c698b43](https://github.com/aborgna-q/guppylang/commit/c698b43010ad0c13319c2c47073a8a54fff84006))
+* Fix mutation of nested arrays ([#839](https://github.com/aborgna-q/guppylang/issues/839)) ([ffb64f9](https://github.com/aborgna-q/guppylang/commit/ffb64f95b0fdb3b118c444a90184120eb7864230))
+* Fix printing of generic function parameters ([#516](https://github.com/aborgna-q/guppylang/issues/516)) ([5c18ef6](https://github.com/aborgna-q/guppylang/commit/5c18ef63237ad76a4b0f74d8b3c4d77a438052ef)), closes [#482](https://github.com/aborgna-q/guppylang/issues/482)
+* Fix pytest hanging ([#754](https://github.com/aborgna-q/guppylang/issues/754)) ([9ad02bb](https://github.com/aborgna-q/guppylang/commit/9ad02bbb92a5d798398376647a7431669e72d4bc))
+* Fix redefinition of structs ([#499](https://github.com/aborgna-q/guppylang/issues/499)) ([0b156e9](https://github.com/aborgna-q/guppylang/commit/0b156e9f9894b45fc2ca6c566e496d9242634434))
+* Fix rendering of line breaks in diagnostics ([#819](https://github.com/aborgna-q/guppylang/issues/819)) ([75efd22](https://github.com/aborgna-q/guppylang/commit/75efd229fcb11514815bfa971d58e323eaaf68eb)), closes [#818](https://github.com/aborgna-q/guppylang/issues/818)
+* Fix struct definitions in notebooks ([#374](https://github.com/aborgna-q/guppylang/issues/374)) ([b009465](https://github.com/aborgna-q/guppylang/commit/b009465d8221bb22576bfb079d05b01e1872d500))
+* hseries ops use floats instead of angles ([#483](https://github.com/aborgna-q/guppylang/issues/483)) ([7ed3853](https://github.com/aborgna-q/guppylang/commit/7ed38531bed8dba65859c2185858bee5bb22a000)), closes [#477](https://github.com/aborgna-q/guppylang/issues/477)
+* Initialise _checked in GuppyModule ([#491](https://github.com/aborgna-q/guppylang/issues/491)) ([3dd5dd3](https://github.com/aborgna-q/guppylang/commit/3dd5dd3797f1da8b1bd0acdee692d1d5e8a19d98)), closes [#489](https://github.com/aborgna-q/guppylang/issues/489)
+* Keep track of definitions that are implicitly imported ([#481](https://github.com/aborgna-q/guppylang/issues/481)) ([a89f225](https://github.com/aborgna-q/guppylang/commit/a89f2251eb753803c2e67aee4bd21ae40f83a5ba)), closes [#480](https://github.com/aborgna-q/guppylang/issues/480)
+* Linearity checking bug ([#355](https://github.com/aborgna-q/guppylang/issues/355)) ([e14660f](https://github.com/aborgna-q/guppylang/commit/e14660f2b31d104c7fb0b5cb8806c3656098afbb))
+* Loading custom polymorphic function defs as values ([#260](https://github.com/aborgna-q/guppylang/issues/260)) ([d15b2f5](https://github.com/aborgna-q/guppylang/commit/d15b2f5a2c012924436ecd3ab482099654a1752e)), closes [#259](https://github.com/aborgna-q/guppylang/issues/259)
+* Make dummy decl names unique ([#49](https://github.com/aborgna-q/guppylang/issues/49)) ([21e7094](https://github.com/aborgna-q/guppylang/commit/21e7094620742bc3cdaf4eafa1fd0d4a192e7518))
+* make tket2 group rather than extra ([#128](https://github.com/aborgna-q/guppylang/issues/128)) ([3a69336](https://github.com/aborgna-q/guppylang/commit/3a69336cf4b7300a546e83abf3db8c99bfe65c0f))
+* Make ZZMax a dyadic operation ([#168](https://github.com/aborgna-q/guppylang/issues/168)) ([152485f](https://github.com/aborgna-q/guppylang/commit/152485f08ef61c3450da1e8b03eee883558a6871)), closes [#154](https://github.com/aborgna-q/guppylang/issues/154)
+* Mock guppy decorator during sphinx builds ([#622](https://github.com/aborgna-q/guppylang/issues/622)) ([1cccc04](https://github.com/aborgna-q/guppylang/commit/1cccc04c54c3c3f38e1e2c1ce828935091e07cad))
+* Mypy tket2 error ([#220](https://github.com/aborgna-q/guppylang/issues/220)) ([7ad3908](https://github.com/aborgna-q/guppylang/commit/7ad3908e2bb2672028df3eaa2cd78883020e144f))
+* Only use path when determining equality of implicit modules ([#216](https://github.com/aborgna-q/guppylang/issues/216)) ([6f47d4b](https://github.com/aborgna-q/guppylang/commit/6f47d4bce55115c6b82d86007f75f40d46796b24))
+* panic on negative exponent in ipow ([#758](https://github.com/aborgna-q/guppylang/issues/758)) ([821771a](https://github.com/aborgna-q/guppylang/commit/821771a12a3aff93a5f7661211197818f3905b3b))
+* Prevent reordering of operations with side-effects ([#855](https://github.com/aborgna-q/guppylang/issues/855)) ([75eb441](https://github.com/aborgna-q/guppylang/commit/75eb4416f8cd19be0cfa7e820e9ee7bdd28571bb))
+* Properly report error for unsupported constants ([#724](https://github.com/aborgna-q/guppylang/issues/724)) ([d0c2da4](https://github.com/aborgna-q/guppylang/commit/d0c2da40cdf1fe4e770123d4174bf710dd44e1a6)), closes [#721](https://github.com/aborgna-q/guppylang/issues/721)
+* Properly report errors for unsupported expressions ([#692](https://github.com/aborgna-q/guppylang/issues/692)) ([7f24264](https://github.com/aborgna-q/guppylang/commit/7f24264a56b0b620847a189eeec565f80adbdc3a)), closes [#691](https://github.com/aborgna-q/guppylang/issues/691)
+* Properly report errors for unsupported subscript assignments ([#738](https://github.com/aborgna-q/guppylang/issues/738)) ([8afa2a9](https://github.com/aborgna-q/guppylang/commit/8afa2a93ae224c57932eb6042464f5722668f742)), closes [#736](https://github.com/aborgna-q/guppylang/issues/736)
+* remove newlines in extension description ([#762](https://github.com/aborgna-q/guppylang/issues/762)) ([2f5eed3](https://github.com/aborgna-q/guppylang/commit/2f5eed3f9064ae92d397940a337d6453ab9206ce))
+* remove use of deprecated Ellipsis ([#699](https://github.com/aborgna-q/guppylang/issues/699)) ([b819a84](https://github.com/aborgna-q/guppylang/commit/b819a844286cfb17ede045a7cb4f52325a36c63f))
+* Return `in_port`/`out_port` for order edges ([c371f84](https://github.com/aborgna-q/guppylang/commit/c371f840ec64bdbfe9b45bbe52d57b8098bcb049))
+* Return `in_port`/`out_port` for order edges ([#84](https://github.com/aborgna-q/guppylang/issues/84)) ([137941f](https://github.com/aborgna-q/guppylang/commit/137941f9d1ddab25f1c0c662d79029a241dcbfa4))
+* Serialisation of bool values ([#239](https://github.com/aborgna-q/guppylang/issues/239)) ([16a77db](https://github.com/aborgna-q/guppylang/commit/16a77dbd4c5905eff6c4ddabe66b5ef1b8a7e15b))
+* Serialisation of float values ([#219](https://github.com/aborgna-q/guppylang/issues/219)) ([937260a](https://github.com/aborgna-q/guppylang/commit/937260af694fbbd5bd217f23d20f13ee4759757c)), closes [#218](https://github.com/aborgna-q/guppylang/issues/218)
+* Stop exiting interpreter on error ([#140](https://github.com/aborgna-q/guppylang/issues/140)) ([728e449](https://github.com/aborgna-q/guppylang/commit/728e44921f20b227ed92f89daae513798701ef62))
+* use correct array ops ([#503](https://github.com/aborgna-q/guppylang/issues/503)) ([720d8b8](https://github.com/aborgna-q/guppylang/commit/720d8b814bbd3f76e788cedc4db4cef96ff24160))
+* Use correct hook for error printing inside jupyter notebooks ([#324](https://github.com/aborgna-q/guppylang/issues/324)) ([bfdb003](https://github.com/aborgna-q/guppylang/commit/bfdb003d454d3d8fb6385c2c758dab56ab622496)), closes [#323](https://github.com/aborgna-q/guppylang/issues/323)
+* Use correct TK2 gate names ([#190](https://github.com/aborgna-q/guppylang/issues/190)) ([df92642](https://github.com/aborgna-q/guppylang/commit/df92642c35b977c0d318747ac1d4011061d6e171))
+* Use latest results extension spec ([#370](https://github.com/aborgna-q/guppylang/issues/370)) ([d9cc8d2](https://github.com/aborgna-q/guppylang/commit/d9cc8d29cce4178c44d00e444d29f7c30fafb7a3))
+* Use panicking division ops ([#56](https://github.com/aborgna-q/guppylang/issues/56)) ([c20233b](https://github.com/aborgna-q/guppylang/commit/c20233b96cd0fa12208c563134ef6c07234ebffc))
+* Use places in BB signatures for Hugr generation ([#342](https://github.com/aborgna-q/guppylang/issues/342)) ([48b0e35](https://github.com/aborgna-q/guppylang/commit/48b0e352d835298b66ea90ff12528391c1c0e2a3))
+
+
+### Documentation
+
+* Add compiler API docs ([#194](https://github.com/aborgna-q/guppylang/issues/194)) ([c3dd9bd](https://github.com/aborgna-q/guppylang/commit/c3dd9bdf19cbfeb23b792376f2fedf8f4f4dbeaf))
+* Add DEVELOPMENT.md ([#584](https://github.com/aborgna-q/guppylang/issues/584)) ([1d29d39](https://github.com/aborgna-q/guppylang/commit/1d29d393206484324835764e89dff7a39c83b3f9))
+* Add licence file ([9edcd4a](https://github.com/aborgna-q/guppylang/commit/9edcd4ac9a42d1bbc758959761414e11dd954523))
+* Add licence file ([#81](https://github.com/aborgna-q/guppylang/issues/81)) ([29008c0](https://github.com/aborgna-q/guppylang/commit/29008c0bfd9c521c5598fd9cdf1b8e090e69f650))
+* Add pypi and python version badges to the README ([#192](https://github.com/aborgna-q/guppylang/issues/192)) ([7fecc45](https://github.com/aborgna-q/guppylang/commit/7fecc45f3fce8489872dbe65c6012f7cd0b8dc61))
+* add reference to runner to readme ([#129](https://github.com/aborgna-q/guppylang/issues/129)) ([45c2bf0](https://github.com/aborgna-q/guppylang/commit/45c2bf010a719785527e1c5cc2ac650975e84d4d))
+* add repository to readme ([#117](https://github.com/aborgna-q/guppylang/issues/117)) ([c63bb0e](https://github.com/aborgna-q/guppylang/commit/c63bb0e0f2efb206219470aa483f5b730e45d902))
+* Add short description and simplify readme for pypi ([#136](https://github.com/aborgna-q/guppylang/issues/136)) ([667bba3](https://github.com/aborgna-q/guppylang/commit/667bba380e7bd38d2e1c66e8e6b67dfbba4efa05))
+* Fix API docs build ([#843](https://github.com/aborgna-q/guppylang/issues/843)) ([cc1e90c](https://github.com/aborgna-q/guppylang/commit/cc1e90c271cc014e7e7fa7392e1a67025753f162))
+* Fix docs build ([#639](https://github.com/aborgna-q/guppylang/issues/639)) ([bd6011c](https://github.com/aborgna-q/guppylang/commit/bd6011cd0e7817fbac24a1b28a8d33ea93c92bef))
+* Fix docs build ([#700](https://github.com/aborgna-q/guppylang/issues/700)) ([684f485](https://github.com/aborgna-q/guppylang/commit/684f485f98ea4cc4f61040af00fbde0b0c908e45)), closes [#680](https://github.com/aborgna-q/guppylang/issues/680)
+* fix README.md and quickstart.md ([#654](https://github.com/aborgna-q/guppylang/issues/654)) ([abb0221](https://github.com/aborgna-q/guppylang/commit/abb0221a46c3dcb069c6e0f08242319d7bb16bad))
+* remove broken link in README ([#801](https://github.com/aborgna-q/guppylang/issues/801)) ([fb1c3b5](https://github.com/aborgna-q/guppylang/commit/fb1c3b5638de5f3e3869dc6e04d08721c258c4dc))
+* Update readme, `cargo build` instead of  `--extra validation` ([#471](https://github.com/aborgna-q/guppylang/issues/471)) ([c2a4c86](https://github.com/aborgna-q/guppylang/commit/c2a4c86a81378447ecaa64ba5090da22971d7303))
+
+
+### Miscellaneous Chores
+
+* Manually set last release commit ([#643](https://github.com/aborgna-q/guppylang/issues/643)) ([b2d569b](https://github.com/aborgna-q/guppylang/commit/b2d569b19ac0001841bdd2c326447dbeee40d20c))
+* release 0.12.1 ([#512](https://github.com/aborgna-q/guppylang/issues/512)) ([b309a94](https://github.com/aborgna-q/guppylang/commit/b309a944af3d45a6afbdf6fd253b3b764e36c029))
+* Remove linst type ([#533](https://github.com/aborgna-q/guppylang/issues/533)) ([3717bae](https://github.com/aborgna-q/guppylang/commit/3717bae2967de210b665869efbe8fb69fc45247a))
+* rename package to guppylang ([#108](https://github.com/aborgna-q/guppylang/issues/108)) ([888d81d](https://github.com/aborgna-q/guppylang/commit/888d81d071be3b6fde07daf6a01d7d4203de7a97))
+* Update hugr to `0.8.0` ([#454](https://github.com/aborgna-q/guppylang/issues/454)) ([b02e0d0](https://github.com/aborgna-q/guppylang/commit/b02e0d017e60469051ddfc84c8cd28003a40286d))
+* update hugr-py to 0.9 ([#562](https://github.com/aborgna-q/guppylang/issues/562)) ([6449184](https://github.com/aborgna-q/guppylang/commit/64491843503fce51177a1afa402b1ce7a00d646f))
+
+
+### Code Refactoring
+
+* conform to hugr schema ([#93](https://github.com/aborgna-q/guppylang/issues/93)) ([ee5f469](https://github.com/aborgna-q/guppylang/commit/ee5f469afda44abc52dee0cacacf8e6d9ac1753d))
+* Make `qubit` type lower case ([#165](https://github.com/aborgna-q/guppylang/issues/165)) ([0a42097](https://github.com/aborgna-q/guppylang/commit/0a42097f617a231a7c6a3096b5d12bda6b19e0aa))
+* rename prelude to std ([#642](https://github.com/aborgna-q/guppylang/issues/642)) ([1a68e8e](https://github.com/aborgna-q/guppylang/commit/1a68e8e7919487f1465cc587b9855cb43169f63d))
+* Stop inlining array.__getitem__ and arrary.__setitem__ ([#799](https://github.com/aborgna-q/guppylang/issues/799)) ([bb199a0](https://github.com/aborgna-q/guppylang/commit/bb199a0d581ead991212a2b7afe45e8f856fd214)), closes [#786](https://github.com/aborgna-q/guppylang/issues/786)
+
+
+### Continuous Integration
+
+* Use `release-please bootstrap`'s default config ([#187](https://github.com/aborgna-q/guppylang/issues/187)) ([72e666a](https://github.com/aborgna-q/guppylang/commit/72e666af5a52c44a4094080a665342422a242d2b))
+
 ## [0.17.0](https://github.com/CQCL/guppylang/compare/v0.16.0...v0.17.0) (2025-03-18)
 
 
